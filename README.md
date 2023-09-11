@@ -5,3 +5,9 @@ The first mode was called the "lane change mode," and it was intended to operate
 The second mode was named the "normal mode," and it functioned as follows: When the left/right push button was pressed for more than 500 ms, it would continue blinking until the button was released.
 
 The third mode was the "hazard mode." In this mode, when the hazard button was pressed for at least 200 ms, both LEDs had to blink, and the blinking would stop when the hazard button was pressed again.
+
+I had to implement all these requirements on an Arduino Uno board. To make this work, I needed: 2 LEDs, 3 push buttons, resistors, connecting wires, and many other components.
+
+
+
+
