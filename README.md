@@ -1,4 +1,4 @@
-# Indicator-Light-App
+# Cas`s indicator lights
 I had to work on a project called "car's indicator lights", which was divided into three modes: 
 The first mode was called the "lane change mode," and it was intended to operate as follows: When the push button was pressed for less than 500 ms, the left/right LED would blink three times.
 
