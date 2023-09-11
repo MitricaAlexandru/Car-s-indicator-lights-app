@@ -1,0 +1,132 @@
+const int buttonLeftPin = 4;
+const int buttonRightPin = 2;
+const int buttonEmergencyPin = 3;
+const int ledLeftPin = 7;
+const int ledRightPin = 8;
+
+
+bool hazardModeActive = false;
+unsigned long hazardModeStartTime = 0;
+
+ 
+
+void setup() {
+  pinMode(buttonLeftPin, INPUT);
+  pinMode(buttonRightPin, INPUT);
+  pinMode(buttonEmergencyPin, INPUT);
+  pinMode(ledLeftPin, OUTPUT);
+  pinMode(ledRightPin, OUTPUT);
+
+ 
+
+  Serial.begin(9600);
+}
+
+ 
+
+bool buttonPressedFor(int buttonPin, unsigned long duration) {
+  unsigned long startTime = millis();
+  while (digitalRead(buttonPin) == HIGH) {
+    if (millis() - startTime >= duration) {
+      return true;
+    }
+  }
+  return false;
+}
+
+ 
+
+ 
+
+void blinkLED(int ledPin, int times) {
+  for (int i = 0; i < times; i++) {
+    digitalWrite(ledPin, HIGH);
+    delay(300);
+    digitalWrite(ledPin, LOW);
+    delay(700);
+  }
+}
+
+ 
+
+void blinkLEDContinuously(int ledPin) {
+  while (digitalRead(buttonLeftPin) == HIGH || digitalRead(buttonRightPin) == HIGH) {
+    if(digitalRead(buttonEmergencyPin) == HIGH)
+    {
+      break;
+    }
+    digitalWrite(ledPin, HIGH);
+    delay(300);
+    digitalWrite(ledPin, LOW);
+    delay(700);
+  }
+}
+
+ 
+
+void activateHazardMode() {
+  hazardModeStartTime = millis();
+  hazardModeActive = true;
+}
+
+ 
+
+void deactivateHazardMode() {
+  hazardModeActive = false;
+  digitalWrite(ledLeftPin, LOW);
+  digitalWrite(ledRightPin, LOW);
+}
+
+ 
+
+void loop() {
+  // Verificăm dacă semnalizarea de avarie trebuie activată sau dezactivată
+  if (digitalRead(buttonEmergencyPin) == HIGH) {
+    if (!hazardModeActive) {
+      activateHazardMode();
+    } else {
+      deactivateHazardMode();
+    }
+    // Debounce the button press
+    delay(200);
+  }
+
+ 
+
+  // Verificăm dacă semnalizarea de avarie este activată
+  if (hazardModeActive) {
+    unsigned long currentTime = millis();
+    if (currentTime - hazardModeStartTime >= 200) {
+      hazardModeStartTime = currentTime;
+      // Comutăm între LED-urile stânga și dreapta
+      digitalWrite(ledLeftPin, !digitalRead(ledLeftPin));
+      digitalWrite(ledRightPin, !digitalRead(ledRightPin));
+    }
+    // Nu verificăm butoanele individuale în timpul semnalizării de avarie
+    return;
+  }
+
+ 
+
+  // Verificăm butonul pentru semnalizarea stânga
+  if (digitalRead(buttonLeftPin) == HIGH) {
+    if (buttonPressedFor(buttonLeftPin, 500)) {
+      blinkLEDContinuously(ledLeftPin);
+    } else {
+      blinkLED(ledLeftPin, 3);
+    }
+  }
+
+ 
+
+  // Verificăm butonul pentru semnalizarea dreapta
+  if (digitalRead(buttonRightPin) == HIGH) {
+    if (buttonPressedFor(buttonRightPin, 500)) {
+      blinkLEDContinuously(ledRightPin);
+    } else {
+      blinkLED(ledRightPin, 3);
+    }
+  }
+}
+
+ 
